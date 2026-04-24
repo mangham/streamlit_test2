@@ -5,16 +5,25 @@ from shapely import wkt
 import folium
 from streamlit_folium import st_folium
 import geopandas as gpd
-
+import os
 st.set_page_config(page_title="서울시 배리어프리 내비", layout="wide")
+
 
 @st.cache_data
 def load_and_preprocess_data():
-    # 1. 파일 읽기 (인코딩 방어)
+    # 🌟 무적의 경로 탐색기: 현재 파일(Seoul_copy.py)의 위치를 스스로 알아냅니다.
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    
+    # 알아낸 위치를 기준으로 data 폴더 안의 파일을 찾아갑니다.
+    DATA_PATH = os.path.join(BASE_DIR, 'data', 'Seoul_map.parquet')
+    
+    # (만약 parquet 변환을 안 하셨다면 위 줄 맨 끝을 'Seoul_map.csv'로 바꾸세요)
+    
+    # 1. 파일 읽기
     try:
-        df = pd.read_csv('data/Seoul_map.csv', encoding='utf-8')
+        df = pd.read_parquet(DATA_PATH)
     except:
-        df = pd.read_csv('data/Seoul_map.csv', encoding='cp949')
+        df = pd.read_csv(DATA_PATH, encoding='utf-8')
     
     # 2. 무적의 이름표 (어떤 이름이든 찰떡같이 찾아냅니다)
     rename_dict = {
